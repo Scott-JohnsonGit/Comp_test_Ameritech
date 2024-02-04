@@ -1,51 +1,95 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Comp_test_Ameritech
 {
-    public class DataSet
+    /// <summary>
+    /// Listed set of Data objects
+    /// </summary>
+    public class DataSet : IDisposable
     {
-        public string CombinedData { get { return _combinedData; } }
-        protected string _combinedData = "";
-        protected List<string> _masterList = new List<string>();
-        public object Current { get { return _masterList[position]; }
-        }
-        protected int position = -1;
-        protected void CombineSets()
+        public int Count { get { return _masterList.Count; } }
+        // Stolen HashSet for storing data with minimal memory usage
+        protected HashSet<Data> _masterList = new HashSet<Data>();
+        private bool _disposedValue;
+        /// <summary>
+        /// Combines all stored data into one string (For ease of displaying)
+        /// </summary>
+        public string CombineSets()
         {
             string fullSet = "";
-            foreach (string set in _masterList)
+            foreach (Data set in _masterList)
             {
-                fullSet += set;
+                fullSet += set.Number;
             }
-            _combinedData = fullSet;
+            return fullSet;
         }
-        public void Add(string set)
+        /// <summary>
+        /// Add Data object to collection
+        /// </summary>
+        /// <param name="set">New Data object coming in</param>
+        public void Add(Data set)
         {
             _masterList.Add(set);
-            IsolateInteger();
         }
+        /// <summary>
+        /// Clear collection
+        /// </summary>
         public void Clear()
         {
-            _masterList = new List<string>();
-            _combinedData = "";
+            _masterList.Clear();
         }
-        protected void IsolateInteger()
+        /// <summary>
+        /// Find The Largest number
+        /// </summary>
+        /// <returns>Largest number</returns>
+        public Data LargestNumber()
         {
-            for (int i = 0; i < _masterList.Count; i++)
+            Data biggestNum = new Data("");
+            foreach (Data d in this._masterList)
             {
-                
+                if (d.Number.Length > biggestNum.Number.Length)
+                {
+                    biggestNum = d;
+                }
             }
-            CombineSets();
+            return biggestNum;
         }
+        ~DataSet()
+        {
+            Dispose(false);
+        }
+        // Basically cheating iteration via stealing _masterList's Enumerator (Leaving public is typically bad practice)
         public IEnumerator GetEnumerator()
         {
             return _masterList.GetEnumerator();
         }
+        #region Garbage collection
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+
+                }
+                this._masterList.Clear();
+                
+                _disposedValue = true;
+            }
+        }
+        #endregion
     }
-    
+
 }
