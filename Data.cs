@@ -14,22 +14,42 @@ namespace Comp_test_Ameritech
         /// <summary>
         /// Data displayed in string form
         /// </summary>
-        public string? Number { get { return _number; } }
+        public string Number { get { return _number; } }
         /// <summary>
         /// Boolean descibing sign accosiated with variable
         /// </summary>
-        public bool IsNegative { get; }
-        protected string? _number;
+        public bool IsNegative { get; } = false;
+        protected string _number;
         /// <summary>
         /// Data initalizer
         /// </summary>
         /// <param name="number">Number to assign Data in string form</param>
         public Data(string number)
+            : this(number, false) 
         {
-            this._number = Remove(number);
-            // Check negative after excess '-' charactors were removed
-            this.IsNegative = number.Contains('-');
-            this._number = Remove(_number, '-');
+            
+        }
+        /// <summary>
+        /// Data initalizer
+        /// </summary>
+        /// <param name="number"Number to assign Data in string form></param>
+        /// <param name="skipIntCheck">Tell the system to skip automatic non-Integer removal</param>
+        public Data(string number, bool skipIntCheck)
+        {
+            if (!skipIntCheck)
+            {
+                this._number = Remove(number);
+                // Check negative after excess '-' charactors were removed
+                if (number.Contains('-'))
+                {
+                    this.IsNegative = true;
+                    this._number = Remove(_number, '-');
+                }
+            }
+            else
+            {
+                this._number = number;
+            }
         }
         #region Data adjusting
         /// <summary>
@@ -57,30 +77,12 @@ namespace Comp_test_Ameritech
         /// <returns>Revised string without specified chars</returns>
         protected static string Remove(string text, char? cutChar)
         {
-            bool foundInt = false;
-            // Skip iterating through chars
             if (cutChar != null)
             {
                 return text.Replace(cutChar.ToString(), "");
             }
-            // Find non-int chars and remove them
-            foreach (char c in text)
-            {
-                // Try to avoid removing integers sign (not foolproof)
-                if (c == '-' && !foundInt)
-                {
-                    continue;
-                }
-                if (!int.TryParse(c.ToString(), out _))
-                {
-                    text = text.Replace(c.ToString(), "");
-                }
-                else
-                {
-                    foundInt = true;
-                }
-            }
-            return text;
+            string newString = new string(text.Where(c => char.IsDigit(c)).ToArray());
+            return newString;
         }
         #endregion
         /// <summary>
@@ -104,7 +106,11 @@ namespace Comp_test_Ameritech
             DataSet datas = new DataSet();
             foreach (string s in seperatedStrings)
             {
-                datas.Add(new Data(s));
+                Data data = new Data(s);
+                if (data.Number.Length > 0)
+                {
+                    datas.Add(data);
+                }
             }
             return datas;
         }

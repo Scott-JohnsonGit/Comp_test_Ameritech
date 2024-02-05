@@ -45,8 +45,8 @@ namespace Comp_test_Ameritech
                     string line = sr.ReadLine();
                     _currentData.Add(new Data(line));
                 }
+                _chunks = ChunkData(_currentData, _currentData.Count / 10);
             }
-            _chunks = ChunkData(_currentData, _currentData.Count / 10);
         }
         /// <summary>
         /// Chunk up data
@@ -73,10 +73,6 @@ namespace Comp_test_Ameritech
             {
                 chunks.Add(newSet);
             }
-            newSet.Clear();
-            newSet = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
             return chunks;
         }
         /// <summary>
@@ -100,7 +96,7 @@ namespace Comp_test_Ameritech
             }
             else
             {
-                throw new Exception("Current data not valid");
+                throw new InvalidOperationException("Data needs to be set first");
             }
         }
 
@@ -121,9 +117,9 @@ namespace Comp_test_Ameritech
         /// </summary>
         /// <param name="DataList">DataSet object of the numbers</param>
         /// <returns>String sum of numbers</returns>
-        protected static string SumByOne(in DataSet DataList)
+        protected internal static string SumByOne(in DataSet DataList)
         {
-            return SumByOne(DataList, (uint)DataList.LargestNumber().Number.Length + 1, out _);
+            return SumByOne(DataList, (byte)(DataList.LargestNumber().Number.Length + 1), out _);
         }
         /// <summary>
         /// Gather the sum of large non-parsable numbers
@@ -131,9 +127,9 @@ namespace Comp_test_Ameritech
         /// <param name="DataList">DataSet object of the numbers</param>
         /// <param name="newData">New string of sum converted to Data object</param>
         /// <returns>String sum of numbers</returns>
-        protected static string SumByOne(in DataSet DataList, out Data newData)
+        protected internal static string SumByOne(in DataSet DataList, out Data newData)
         {
-            return SumByOne(DataList, (uint)DataList.LargestNumber().Number.Length + 1, out newData);
+            return SumByOne(DataList, (byte)(DataList.LargestNumber().Number.Length + 1), out newData);
         }
         /// <summary>
         /// Gather the sum of large non-parsable numbers
@@ -141,7 +137,7 @@ namespace Comp_test_Ameritech
         /// <param name="DataList">DataSet object of the numbers</param>
         /// <param name="digits">How many digits (small end) to keep</param>
         /// <returns>String sum of numbers</returns>
-        protected static string SumByOne(in DataSet DataList, uint? digits)
+        protected internal static string SumByOne(in DataSet DataList, int digits)
         {
             return SumByOne(DataList, digits, out _);
         }
@@ -152,13 +148,13 @@ namespace Comp_test_Ameritech
         /// <param name="digits">How many digits (small end) to keep</param>
         /// <param name="newData">New string of sum converted to Data object</param>
         /// <returns>String sum of numbers</returns>
-        protected static string SumByOne(DataSet DataList, uint? digits, out Data newData)
+        protected internal static string SumByOne(DataSet DataList, int digits, out Data newData)
         {
             // Could've used an array instead of utilizing substrings, did not for very large array memory/crashing concerns
             // Find number with the most digits for the iteration length
             string biggestNum = DataList.LargestNumber().Number;
             // Iterate until either index runs out or digit limit is reached
-            newData = new Data("");
+            newData = new Data("", true);
             int remainder = 0;
             for (int i = 0; i < biggestNum.Length && i < digits; i++)
             {
@@ -178,11 +174,11 @@ namespace Comp_test_Ameritech
                     }
                     if (revData.Length > i && !data.IsNegative)
                     {
-                        columnResult += int.Parse(revData.Substring(i, 1));
+                        columnResult += short.Parse(revData.Substring(i, 1));
                     }
                     else if (revData.Length > i && data.IsNegative)
                     {
-                        subtract += int.Parse(revData.Substring(i, 1));
+                        subtract += byte.Parse(revData.Substring(i, 1));
                     }
                     // Skip over data that does not have the index length i
                     else
@@ -190,7 +186,6 @@ namespace Comp_test_Ameritech
                         continue;
                     }
                 }
-                ;
                 // Add on the remainder
                 if ((columnResult - subtract < 0 || columnResult + remainder < 0) && i < digits - 1)
                 {
@@ -206,7 +201,7 @@ namespace Comp_test_Ameritech
                 }
                 else if (i > digits - 1)
                 {
-                    newData = new Data(newData.ReverseString());
+                    newData = new Data(newData.ReverseString(), true);
                     return newData.Number;
                 }
                 else
@@ -230,8 +225,7 @@ namespace Comp_test_Ameritech
             {
                 newData.Append(remainder.ToString());
             }
-            newData = new Data(newData.ReverseString());
-            
+            newData = new Data(newData.ReverseString(), true);
             return newData.Number;
         }
         

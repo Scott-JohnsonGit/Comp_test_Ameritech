@@ -21,12 +21,27 @@ namespace Comp_test_Ameritech
         /// <summary>
         /// Combines all stored data into one string (For ease of displaying)
         /// </summary>
+        /// <returns>Combined string of instance values</returns>
         public string CombineSets()
         {
+            return CombineSets("");
+        }
+        /// <summary>
+        /// Combines all stored data into one string (For ease of displaying)
+        /// </summary>
+        /// <param name="seperator">String that seperates values</param>
+        /// <returns>Combined string of instance values</returns>
+        /// <exception cref="ArgumentNullException">Seperator parameter is null</exception>
+        public string CombineSets(string seperator)
+        {
+            if (seperator == null)
+            {
+                throw new ArgumentNullException("seperator");
+            }
             string fullSet = "";
             foreach (Data set in _masterList)
             {
-                fullSet += set.Number;
+                fullSet += set.Number + seperator;
             }
             return fullSet;
         }
@@ -34,9 +49,17 @@ namespace Comp_test_Ameritech
         /// Add Data object to collection
         /// </summary>
         /// <param name="set">New Data object coming in</param>
+        /// <exception cref="ArgumentNullException">Data is null</exception>
         public void Add(Data set)
         {
-            _masterList.Add(set);
+            if (set != null && set.Number != null)
+            {
+                _masterList.Add(set);
+            }
+            else
+            {
+                throw new ArgumentNullException("set");
+            }
         }
         /// <summary>
         /// Clear collection
@@ -46,9 +69,9 @@ namespace Comp_test_Ameritech
             _masterList.Clear();
         }
         /// <summary>
-        /// Find The Largest number
+        /// Find The Largest number in the instance collection
         /// </summary>
-        /// <returns>Largest number</returns>
+        /// <returns>Largest number by digits</returns>
         public Data LargestNumber()
         {
             Data biggestNum = new Data("");
