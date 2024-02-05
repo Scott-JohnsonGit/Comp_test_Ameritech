@@ -8,4 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Comp_test_Ameritech.exe" />
+  </ItemGroup>
+
 </Project>

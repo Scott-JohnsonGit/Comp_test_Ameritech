@@ -62,12 +62,12 @@ namespace Comp_test_Ameritech
 #else
         
         // TESING OUT MEMORY SAVING FEATURE WITH LARGE NUMBERS 
-        // Spoiler its bad
+        // Spoiler its very bad
         private DataSet TEST_dataSet()
         {
             DataSet ds = new DataSet();
             Random random = new Random();
-            for (int i = 0; i < 60000000; i++)
+            for (int i = 0; i < 6000000; i++)
             {
                 ds.Add(new Data(random.Next(int.MaxValue).ToString() + random.Next(int.MaxValue).ToString() + random.Next(int.MaxValue).ToString() + random.Next(int.MaxValue).ToString()));
             }
@@ -121,7 +121,7 @@ namespace Comp_test_Ameritech
         
         private void OpenFileSelector(object? sender, EventArgs? e)
         {
-            DataSet ds = TESTSET2(_TestString2);
+            DataSet ds = TEST_dataSet();
             List<DataSet> datas = LargeNumberProcess.ChunkData(ds, 10);
             FinishData(datas);
         }
