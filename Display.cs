@@ -121,7 +121,7 @@ namespace Comp_test_Ameritech
         
         private void OpenFileSelector(object? sender, EventArgs? e)
         {
-            DataSet ds = TESTSET2(_TestString2);
+            DataSet ds = TESTSET2(_TestString1);
             List<DataSet> datas = LargeNumberProcess.ChunkData(ds, 10);
             FinishData(datas);
         }
